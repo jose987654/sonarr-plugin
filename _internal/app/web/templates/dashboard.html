@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Sonarr-Seedr Integration</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/app.js"></script>
+</head>
+
+<body>
+    <div class="navbar">
+        <div>
+            <a href="/">Dashboard</a>
+            <a href="/torrents">Torrents</a>
+            <a href="/config">Config</a>
+            <!-- <a href="/folder-watcher">Folder Watcher</a> -->
+        </div>
+        <div>
+            <a href="/api/auth/logout">Logout</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h1>Sonarr-Seedr Dashboard</h1>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-number">{{ active_count|default(0) }}</div>
+            <div class="stat-label">Active Downloads</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ completed_count|default(0) }}</div>
+            <div class="stat-label">Completed Downloads</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ space_used }}</div>
+            <div class="stat-label">Space Used</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ space_available }}</div>
+            <div class="stat-label">Space Available</div>
+        </div>
+        <div class="stat-card">
+            <div
+                class="stat-number {% if watcher_status is defined and watcher_status == 'Running' %}status-completed{% else %}status-error{% endif %}">
+                {{ watcher_status|default('Not Running') }}
+            </div>
+            <div class="stat-label">Folder Watcher</div>
+        </div>
+    </div>
+
+    {% if watcher_settings is defined and watcher_settings.get('torrent_dir') %}
+    <div class="folder-info">
+        <p><strong>Watching:</strong> {{ watcher_settings.get('torrent_dir') }}</p>
+        {% if watcher_settings.get('download_dir') %}
+        <p><strong>Saving to:</strong> {{ watcher_settings.get('download_dir') }}</p>
+        {% endif %}
+        <p><strong>Last check:</strong> {{ last_check|default('Never') }}</p>
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <h2>Active Torrents</h2>
+
+        <div class="auto-refresh">
+            <input type="checkbox" id="auto-refresh" name="auto-refresh">
+            <label for="auto-refresh">Auto-refresh every 10 seconds</label>
+        </div>
+
+        <button id="refresh-btn" class="action-btn refresh-button">
+            Refresh
+        </button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Size</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="torrents-table-body">
+                {% if torrents|length > 0 %}
+                {% for torrent in torrents %}
+                <tr>
+                    <td>{{ torrent.title }}</td>
+                    <td>
+                        {% if torrent.status == 'completed' %}
+                        <span class="status-completed">{{ torrent.status }}</span>
+                        {% elif torrent.status == 'downloading' %}
+                        <span class="status-downloading">{{ torrent.status }}</span>
+                        {% elif torrent.status == 'error' %}
+                        <span class="status-error">{{ torrent.status }}</span>
+                        {% else %}
+                        {{ torrent.status }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="{{ torrent.progress }}"> {{ torrent.progress }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ torrent.size }}</td>
+                    <td class="actions">
+                        {% if torrent.status == 'completed' %}
+                        <button class="action-btn" onclick="downloadFiles('{{ torrent.title }}')">Download</button>
+                        <button class="action-btn" onclick="notifySonarr('{{ torrent.title }}')">Notify Sonarr</button>
+                        <button class="action-btn" onclick="deleteTorrent('{{ torrent.title }}')">Delete</button>
+                        {% elif torrent.status == 'downloading' %}
+                        <button class="action-btn" onclick="pauseTorrent('{{ torrent.title }}')">Pause</button>
+                        <button class="action-btn" onclick="deleteTorrent('{{ torrent.title }}')">Delete</button>
+                        {% else %}
+                        <button class="action-btn" onclick="deleteTorrent('{{ torrent.title }}')">Delete</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="empty-state">No active torrents found</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <a href="/torrents" class="add-button">Add New Torrent</a>
+    </div>
+
+    <!-- Available Torrents in Watched Folder -->
+    <div class="container" id="available-torrents-container">
+        <h2>Available Torrents in Watched Folder</h2>
+        <div class="loading-spinner" id="torrents-loading">Loading torrents...</div>
+        <div class="error-message" id="torrents-error" style="display: none;"></div>
+
+        <div id="no-torrents-message" style="display: none;">
+            <p>No torrent files found in the watched folder.</p>
+        </div>
+
+        <table id="available-torrents-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Modified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="available-torrents-body">
+                <!-- Torrent files will be listed here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Folder Watcher Logs -->
+    <div class="container" id="logs-container">
+        <h2>Folder Watcher Logs</h2>
+        <div class="logs-header">
+            <button class="action-btn" id="refresh-logs-btn">Refresh Logs</button>
+            <select id="log-lines-count">
+                <option value="20">Last 20 lines</option>
+                <option value="50" selected>Last 50 lines</option>
+                <option value="100">Last 100 lines</option>
+                <option value="200">Last 200 lines</option>
+            </select>
+        </div>
+
+        <div class="loading-spinner" id="logs-loading">Loading logs...</div>
+        <div class="error-message" id="logs-error" style="display: none;"></div>
+
+        <pre id="logs-content"
+            style="display: none; background-color: #f5f5f5; padding: 10px; border-radius: 4px; max-height: 400px; overflow-y: auto; white-space: pre-wrap; font-size: 12px;"></pre>
+    </div>
+</body>
+
+</html>

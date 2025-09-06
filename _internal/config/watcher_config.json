@@ -1,0 +1,8 @@
+{
+    "torrent_dir": "D:\\New folder (2)",
+    "download_dir": "D:\\New folder (11)",
+    "watch_interval": 30,
+    "save_magnet_files": true,
+    "magnet_extension": ".magnet",
+    "auto_start": true
+}

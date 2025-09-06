@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torrent Management - Sonarr-Seedr Integration</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/app.js"></script>
+</head>
+
+<body>
+    <div class="navbar">
+        <div>
+            <a href="/">Dashboard</a>
+            <a href="/torrents">Torrents</a>
+            <a href="/config">Config</a>
+            <!-- <a href="/folder-watcher">Folder Watcher</a> -->
+        </div>
+        <div>
+            <a href="/api/auth/logout">Logout</a>
+        </div>
+    </div>
+
+    {% if messages %}
+    <div class="flash-messages">
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if error_403 %}
+    <div class="alert alert-danger">
+        <p><strong>403 Forbidden Error:</strong> Your Seedr token doesn't have the required permissions to add torrents.
+        </p>
+        <p>Please <a href="/reauth" class="alert-link">re-authenticate with Seedr</a> to get the
+            necessary permissions.</p>
+    </div>
+    {% endif %}
+
+    {% if error_413 %}
+    <div class="alert alert-warning">
+        <p><strong>Not enough space - Added to wishlist:</strong> The torrent has been added to your Seedr wishlist
+            because there isn't enough space in your account.</p>
+        <p>To download this torrent, you can:</p>
+        <ol>
+            <li>Free up space in your Seedr account by deleting existing files</li>
+            <li>Upgrade your Seedr account for more storage</li>
+            <li>Wait for the wishlist item to be processed automatically when space becomes available</li>
+        </ol>
+    </div>
+    {% endif %}
+
+    <div class="container">
+        <h1>Add New Torrent</h1>
+        <form method="POST" action="/api/downloads">
+            <div class="form-group">
+                <label for="torrent_link">Torrent/Magnet Link</label>
+                <input type="text" id="torrent_link" name="download_url" required>
+                <div class="help-text">Enter a magnet link or URL to a .torrent file</div>
+                <div class="help-text"><strong>Tip:</strong> Magnet links are preferred and help avoid "413 Request
+                    Entity Too Large" errors for large torrents.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="custom_title">Custom Title (Optional)</label>
+                <input type="text" id="custom_title" name="title">
+                <div class="help-text">Specify a custom title for the download. If left blank, it will be automatically
+                    determined from the torrent metadata.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="notify_sonarr">Notify Sonarr After Download</label>
+                <select id="notify_sonarr" name="notify_sonarr">
+                    <option value="true">Yes</option>
+                    <option value="false" selected>No</option>
+                </select>
+                <div class="help-text">Choose whether to automatically notify Sonarr when the download completes.</div>
+            </div>
+
+            <button type="submit">Add Torrent</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>Current Torrents</h2>
+
+        <div class="auto-refresh">
+            <input type="checkbox" id="auto-refresh" name="auto-refresh">
+            <label for="auto-refresh">Auto-refresh every 10 seconds</label>
+            <button id="refresh-btn" class="action-btn refresh-btn-margin">
+                Refresh Now
+            </button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Status</th>
+                    <th>Progress</th>
+                    <th>Size</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="torrents-table-body">
+                {% if torrents|length > 0 %}
+                {% for torrent in torrents %}
+                <tr>
+                    <td>{{ torrent.title }}</td>
+                    <td>
+                        {% if torrent.status == 'completed' %}
+                        <span class="status-completed">{{ torrent.status }}</span>
+                        {% elif torrent.status == 'downloading' %}
+                        <span class="status-downloading">{{ torrent.status }}</span>
+                        {% elif torrent.status == 'error' %}
+                        <span class="status-error">{{ torrent.status }}</span>
+                        {% else %}
+                        {{ torrent.status }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" data-progress="{{ torrent.progress }}">{{ torrent.progress }}%
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ torrent.size }}</td>
+                    <td class="actions">
+                        {% if torrent.status == 'completed' %}
+                        <button class="action-btn" onclick="downloadFiles('{{ torrent.title }}')">Download</button>
+                        <button class="action-btn" onclick="notifySonarr('{{ torrent.title }}')">Notify Sonarr</button>
+                        <button class="action-btn" onclick="deleteTorrent('{{ torrent.title }}')">Delete</button>
+                        {% elif torrent.status == 'downloading' %}
+                        <button class="action-btn" onclick="pauseTorrent('{{ torrent.title }}')">Pause</button>
+                        <button class="action-btn" onclick="deleteTorrent('{{ torrent.title }}')">Delete</button>
+                        {% else %}
+                        <button class="action-btn" onclick="deleteTorrent('{{ torrent.title }}')">Delete</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">No active torrents found</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

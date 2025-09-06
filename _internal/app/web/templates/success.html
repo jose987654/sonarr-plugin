@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Complete - Sonarr-Seedr Integration</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/app.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Setup Complete!</h1>
+
+        <div class="success-message">
+            <h2>Your configuration has been saved successfully.</h2>
+            <p>You can close this browser window now.</p>
+        </div>
+
+        <div class="server-info">
+            <h3>Server Information:</h3>
+            <p>Your server is running at: <span id="serverAddress"></span></p>
+            <p>You can access the dashboard at: <span id="dashboardUrl"></span></p>
+        </div>
+
+        <div class="next-steps">
+            <h3>Next Steps:</h3>
+            <ol>
+                <li>Open a terminal/command prompt</li>
+                <li>Navigate to the project directory</li>
+                <li>Run the following command to start the application:
+                    <pre><code>python run.py</code></pre>
+                </li>
+                <li>Access the dashboard to authenticate with Seedr:
+                    <pre><code>http://localhost:8000</code></pre>
+                </li>
+            </ol>
+        </div>
+
+        <p>Thank you for using Sonarr-Seedr Integration!</p>
+    </div>
+</body>
+
+</html>

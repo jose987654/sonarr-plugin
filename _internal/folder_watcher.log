@@ -1,0 +1,13 @@
+2025-09-06 19:56:18,821 - sonarr_seedr - INFO - Loaded watcher config: {'torrent_dir': 'D:\\New folder (10)', 'download_dir': 'D:\\New folder (11)', 'watch_interval': 30, 'save_magnet_files': True, 'magnet_extension': '.magnet', 'auto_start': True}
+2025-09-06 19:56:18,826 - sonarr_seedr - INFO - TorrentWatcher initialized. Watching for .torrent files
+2025-09-06 19:56:18,827 - sonarr_seedr - INFO - Downloads will be saved to: D:\New folder (11)
+2025-09-06 19:56:18,832 - sonarr_seedr - INFO - Started watching D:\New folder (10) for torrent files
+2025-09-06 19:56:18,833 - sonarr_seedr - INFO - Watcher thread started successfully
+2025-09-06 19:57:19,307 - sonarr_seedr - INFO - Browsing folders at path: ''
+2025-09-06 19:57:20,804 - sonarr_seedr - INFO - Browsing folders at path: 'D:\'
+2025-09-06 19:57:24,416 - sonarr_seedr - INFO - Browsing folders at path: 'D:\New folder (2)'
+2025-09-06 19:57:30,013 - sonarr_seedr - INFO - Starting watcher after configuration save for directories: D:\New folder (2) and D:\New folder (11)
+2025-09-06 19:57:30,016 - sonarr_seedr - INFO - TorrentWatcher initialized. Watching for .torrent files
+2025-09-06 19:57:30,017 - sonarr_seedr - INFO - Downloads will be saved to: D:\New folder (11)
+2025-09-06 19:57:30,026 - sonarr_seedr - INFO - Started watching D:\New folder (2) for torrent files
+2025-09-06 19:57:30,028 - sonarr_seedr - INFO - Watcher thread started successfully after config save

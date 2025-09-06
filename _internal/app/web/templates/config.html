@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonarr-Seedr Folder Setup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--primary-color);
+            background-image: linear-gradient(to right,
+                    var(--primary-dark),
+                    var(--primary-color),
+                    var(--primary-light));
+            padding: 12px 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: #1e88e5;
+            border-bottom: 2px solid #1e88e5;
+            padding-bottom: 10px;
+        }
+
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        button {
+            background-color: #1e88e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+
+        .flash-messages {
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .browse-btn {
+            background-color: #757575;
+            padding: 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* Folder browser styles */
+        .folder-browser {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            max-width: 90%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+
+        .folder-browser h3 {
+            margin-top: 0;
+        }
+
+        .folder-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        .folder-item {
+            padding: 5px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .folder-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+    </style>
+    <!-- <link rel="stylesheet" href="../static/css/style.css"> -->
+</head>
+
+<body>
+
+    <div class="">
+        <h1>Folder Watcher Setup</h1>
+
+        </ul>
+    </div>
+    <div class="navbar">
+        <div>
+            <a href="/">Dashboard</a>
+            <a href="/torrents">Torrents</a>
+            <a href="/config">Config</a>
+            <!--   <!-- <a href="/folder-watcher">Folder Watcher</a> --> -->
+        </div>
+
+    </div>
+
+    <form method="POST" action="/api/watcher/config" id="setup-form">
+        <!-- No hidden step field needed for FastAPI -->
+
+        <p>Configure the folder watcher to automatically upload .torrent files to Seedr and download completed
+            files.</p>
+
+        <div class="form-group">
+            <label for="torrent_dir">Torrent Directory</label>
+            <div class="input-group">
+                <input type="text" id="torrent_dir" name="torrent_dir" value="{{ watcher_settings.torrent_dir }}"
+                    required>
+                <button type="button" class="browse-btn" onclick="browseFolders('torrent_dir')">Browse...</button>
+            </div>
+            <div class="help-text">Directory where the .torrent files will be placed by Sonarr</div>
+        </div>
+
+        <div class="form-group">
+            <label for="download_dir">Download Directory</label>
+            <div class="input-group">
+                <input type="text" id="download_dir" name="download_dir"
+                    value="{{ watcher_settings.download_dir if watcher_settings else config.download_dir }}" required>
+                <button type="button" class="browse-btn" onclick="browseFolders('download_dir')">Browse...</button>
+            </div>
+            <div class="help-text">Directory where downloaded files from Seedr will be saved</div>
+        </div>
+
+        <div class="form-group">
+            <label for="watch_interval">Watch Interval (seconds)</label>
+            <input type="number" id="watch_interval" name="watch_interval"
+                value="{{ watcher_settings.watch_interval or 30 }}" min="10" max="300">
+            <div class="help-text">How often to check for download status (10-300 seconds)</div>
+        </div>
+
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="save_magnet_files" name="save_magnet_files" {% if
+                    watcher_settings.save_magnet_files %}checked{% endif %}>
+                Save Magnet Files
+            </label>
+            <div class="help-text">Enable support for .magnet files</div>
+        </div>
+
+        <div class="form-group">
+            <label for="magnet_extension">Magnet File Extension</label>
+            <input type="text" id="magnet_extension" name="magnet_extension"
+                value="{{ watcher_settings.magnet_extension or '.magnet' }}">
+            <div class="help-text">Extension to use for magnet links (default: .magnet)</div>
+        </div>
+
+        <button type="submit">Save Configuration</button> <input type="hidden" name="auto_start" value="true">
+    </form>
+    </div>
+
+    <!-- Folder browser overlay -->
+    <div class="overlay" id="overlay"></div>
+    <div class="folder-browser" id="folder-browser">
+        <h3>Select a folder</h3>
+        <div class="current-path" id="current-path"></div>
+        <div class="folder-list" id="folder-list"></div>
+        <div>
+            <button id="select-folder">Select</button>
+            <button onclick="closeFolderBrowser()">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        let currentTarget = null;
+        let currentPath = '';
+
+        function browseFolders(targetId) {
+            currentTarget = targetId;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('folder-browser').style.display = 'block';
+
+            // Always start at root folder to show drive list
+            loadFolders('');
+        }
+
+        function closeFolderBrowser() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('folder-browser').style.display = 'none';
+        }
+
+        function loadFolders(path) {
+            fetch('/api/browse_folders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ path: path })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        currentPath = data.current_path;
+                        document.getElementById('current-path').textContent = currentPath;
+
+                        const folderList = document.getElementById('folder-list');
+                        folderList.innerHTML = '';
+
+                        data.folders.forEach(folder => {
+                            const folderItem = document.createElement('div');
+                            folderItem.className = 'folder-item';
+                            folderItem.textContent = folder;
+                            folderItem.onclick = () => loadFolders(folder);
+                            folderList.appendChild(folderItem);
+                        });
+
+                        // Set up select button
+                        document.getElementById('select-folder').onclick = () => {
+                            document.getElementById(currentTarget).value = currentPath;
+                            closeFolderBrowser();
+                        };
+                    } else {
+                        alert(`Error: ${data.message}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading folders. Please try again.');
+                });
+        }
+    </script>
+</body>
+
+</html>

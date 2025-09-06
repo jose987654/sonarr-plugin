@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticating with Seedr</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <script src="../static/js/app.js"></script>
+</head>
+
+<body class="auth-polling-page">
+    <div class="container">
+        <div class="auth-container">
+            <h1>Authenticating with Seedr</h1>
+            <p>To complete the authentication, please follow these steps:</p>
+
+            <div class="steps">
+                <ol>
+                    <li>Click the button below to open Seedr authentication</li>
+                    <li>Verify your code: <strong class="user-code">{{ user_code }}</strong></li>
+                    <li>Approve access to your Seedr account when prompted</li>
+                </ol>
+            </div>
+
+            <div class="auth-action">
+                <a href="{{ verification_uri }}?user_code={{ user_code }}" target="_blank" class="button primary">
+                    Open Seedr Authentication
+                </a>
+                <p class="manual-link">
+                    If the button doesn't work, visit <a href="{{ verification_uri }}" target="_blank">{{
+                        verification_uri }}</a>
+                    and enter code: <strong>{{ user_code }}</strong>
+                </p>
+            </div>
+
+            <div class="auth-status">
+                <p>Waiting for authentication...</p>
+                <div class="spinner"></div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="auth-progress" class="progress-fill" data-progress="0">0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
