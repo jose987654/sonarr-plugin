@@ -35,8 +35,11 @@
 
 ### 3. Configure Sonarr (Optional)
 
-- **Sonarr Host**: `http://localhost:8989` (default)
-- **API Key**: Get from Sonarr Settings → General → API Key
+1. **Configure in App**: Enter Sonarr host in the web interface
+   - **Sonarr Host**: `http://localhost:8989` (default)
+2. **Set Folders**: Configure Torrent Folder and Watch Folder in the app
+   - **Torrent Folder**: Where you'll drop `.torrent` files
+   - **Watch Folder**: Where completed downloads will be saved
 
 ## 📖 How It Works
 
@@ -70,9 +73,10 @@ graph TD
 
 ### Sonarr Integration
 
-1. **Enable API**: Go to Sonarr Settings → General → API Key
-2. **Copy API Key**: Copy the generated API key
-3. **Configure in App**: Enter Sonarr host and API key in the web interface
+1. **Configure in App**: Enter Sonarr host in the web interface
+2. **Set Folders**: Configure Torrent Folder and Watch Folder in the app
+   - **Torrent Folder**: Where you'll drop `.torrent` files
+   - **Watch Folder**: Where completed downloads will be saved
 
 ### Seedr Account
 
@@ -103,7 +107,7 @@ Access the web interface at **http://localhost:8000** for:
 | **App won't start**         | Run `debug.bat` to see error messages   |
 | **Port 8000 busy**          | Run `SonarrSeedr.exe --port 8001`       |
 | **Authentication fails**    | Check internet connection and try again |
-| **Sonarr not connecting**   | Verify API key and host URL             |
+| **Sonarr not connecting**   | Verify host URL and Sonarr is running   |
 | **Torrents not processing** | Check torrent directory permissions     |
 
 ### Debug Mode

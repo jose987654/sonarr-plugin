@@ -2,6 +2,15 @@
 
 **Follow these simple steps to get your plugin running on Windows.**
 
+## 🔄 How It Works
+
+This plugin acts as a bridge between Sonarr and Seedr cloud storage. Here's how the folder system works:
+
+- **Torrent Folder**: Sonarr stores `.torrent` files here → Plugin watches this folder → Uploads to Seedr cloud
+- **Watch Folder**: Plugin downloads completed files here → Sonarr imports from this folder → Organizes your TV shows
+
+**The key**: Both Sonarr and the plugin must use the EXACT SAME folder paths for everything to work automatically. When you drop a torrent file into the Torrent Folder, the entire process happens automatically: Sonarr → Plugin → Seedr → Plugin → Sonarr → Organized TV show!
+
 ---
 
 ## 📋 Prerequisites (5 minutes)

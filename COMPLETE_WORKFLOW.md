@@ -15,8 +15,7 @@ This guide shows you exactly how to use Sonarr-Seedr to automatically download a
 ### Step 2: Configure Sonarr (One-time)
 
 1. **Install Sonarr** (if not already installed)
-2. **Get API Key**: Sonarr Settings → General → API Key
-3. **Configure in App**: Enter Sonarr host and API key in web interface
+2. **Configure in App**: Enter Sonarr host in web interface
 
 ### Step 3: Download TV Shows (Ongoing)
 
@@ -95,7 +94,6 @@ graph TD
 Torrent Directory: C:\Downloads\Torrents
 Download Directory: C:\Downloads\Completed
 Sonarr Host: http://localhost:8989
-Sonarr API Key: [Your API Key]
 ```
 
 ### Advanced Setup
@@ -105,7 +103,6 @@ Torrent Directory: D:\Media\Torrents\TV
 Download Directory: D:\Media\Downloads\TV
 Root Folder: D:\Media\TV Shows
 Sonarr Host: http://192.168.1.100:8989
-Sonarr API Key: [Your API Key]
 ```
 
 ## 🔍 Monitoring Your Downloads
@@ -173,7 +170,6 @@ C:\Torrents\
 
 ### Sonarr Not Importing
 
-- **Check**: API key is correct
 - **Check**: Sonarr is running
 - **Check**: Show exists in Sonarr library
 - **Solution**: Add show to Sonarr first

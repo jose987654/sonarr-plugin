@@ -139,25 +139,16 @@ C:\SonarrSeedr\
 3. **Start** Sonarr service
 4. **Access** web interface at `http://localhost:8989`
 
-### Step 2: Configure Sonarr API
-
-1. **Open** Sonarr web interface
-2. **Go to** Settings → General
-3. **Find** "API Key" section
-4. **Copy** the API key (long string of letters and numbers)
-5. **Note** the API key for plugin configuration
-
-### Step 3: Configure Plugin with Sonarr
+### Step 2: Configure Plugin with Sonarr
 
 1. **Open** Sonarr-Seedr web interface (`http://localhost:8000`)
 2. **Go to** Configuration section
 3. **Enter** Sonarr details:
    - **Host**: `http://localhost:8989` (default)
-   - **API Key**: Paste the API key from Sonarr
 4. **Click** "Save Configuration"
 5. **Test** connection to verify it works
 
-### Step 4: Set Up Root Folder in Sonarr
+### Step 3: Set Up Root Folder in Sonarr
 
 1. **In Sonarr**, go to Settings → Media Management
 2. **Add** a root folder for your TV shows
@@ -284,10 +275,9 @@ The plugin will automatically:
 **Solutions**:
 
 1. **Verify** Sonarr is running
-2. **Check** API key is correct
-3. **Verify** host URL (usually `http://localhost:8989`)
-4. **Check** Sonarr firewall settings
-5. **Restart** both applications
+2. **Verify** host URL (usually `http://localhost:8989`)
+3. **Check** Sonarr firewall settings
+4. **Restart** both applications
 
 #### ❌ Torrents Not Processing
 
