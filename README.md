@@ -33,7 +33,7 @@
 4. Enter the code and approve the application
 5. ✅ **Authentication complete!**
 
-### 3. Configure Sonarr (Optional)
+### 3. Configure Sonarr 
 
 1. **Configure in App**: Enter Sonarr host in the web interface
    - **Sonarr Host**: `http://localhost:8989` (default)
